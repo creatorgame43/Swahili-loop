@@ -96,6 +96,37 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Catch-all route for SPA - serve index.html for all non-API routes
+app.get('*', (req, res) => {
+  // If it's an API request and it doesn't match any route, return 404 JSON
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+  // For all other routes, serve index.html (SPA routing)
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  
+  // Handle multer errors
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(413).json({ error: 'File too large. Maximum size is 100MB' });
+  }
+  
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: err.message });
+  }
+  
+  if (err.message === 'Only video files are allowed') {
+    return res.status(400).json({ error: err.message });
+  }
+  
+  // Default error response
+  res.status(500).json({ error: 'Internal server error' });
+});
+
 app.listen(PORT, () => {
   console.log(`🎬 Swahili Loop running on http://localhost:${PORT}`);
 });
