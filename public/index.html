@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Swahili Loop - Video Yangu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-player {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 30px 20px 20px;
+            z-index: 10;
+        }
+        
+        .logo-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 20;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+        }
+        
+        .logo span {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .action-btn {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 0 5px;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+        }
+        
+        .upload-area {
+            border: 3px dashed rgba(255,255,255,0.5);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .upload-area:hover {
+            border-color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .upload-area.dragover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,1);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            color: white;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            cursor: pointer;
+            color: white;
+            background: none;
+            border: none;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+        }
+        
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .video-thumbnail:hover {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+        
+        .video-thumbnail video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255,0,0,0.8);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .no-videos {
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+            padding: 40px 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Player View -->
+    <div id="playerView" class="block">
+        <div class="video-container">
+            <div class="logo-overlay">
+                <div class="logo">SWAHILI<span>LOOP</span></div>
+            </div>
+            
+            <video id="videoPlayer" class="video-player" loop muted autoplay playsinline>
+                <source src="" type="video/mp4">
+            </video>
+            
+            <div class="video-controls">
+                <div class="flex justify-between items-center flex-wrap gap-2">
+                    <div>
+                        <button class="action-btn" onclick="previousVideo()">
+                            <i class="fas fa-chevron-left"></i> Nyuma
+                        </button>
+                        <button class="action-btn primary" id="playBtn" onclick="togglePlay()">
+                            <i class="fas fa-play"></i> Cheza
+                        </button>
+                        <button class="action-btn" onclick="nextVideo()">
+                            Mbele <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <button class="action-btn" onclick="showUploadModal()">
+                            <i class="fas fa-cloud-upload-alt"></i> Upload
+                        </button>
+                        <button class="action-btn" onclick="showGallery()">
+                            <i class="fas fa-th"></i> Orodha
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gallery View -->
+    <div id="galleryView" style="display: none;">
+        <div class="min-h-screen" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div style="padding: 20px;">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="logo" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                        SWAHILI<span>LOOP</span>
+                    </div>
+                    <button class="action-btn" onclick="showPlayer()">
+                        <i class="fas fa-play"></i> Cheza
+                    </button>
+                </div>
+                
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="loadVideos()">
+                        <i class="fas fa-video"></i> Videos
+                    </button>
+                    <button class="tab-btn" onclick="showUploadModal()">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload
+                    </button>
+                </div>
+                
+                <div id="videoGrid" class="video-grid">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Inapakia videos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content" style="position: relative;">
+            <button class="close-btn" onclick="closeUploadModal()">&times;</button>
+            <h2 style="margin-bottom: 30px; font-size: 24px; text-align: center;">
+                <i class="fas fa-cloud-upload-alt"></i> Upload Video Yako
+            </h2>
+            
+            <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <div style="font-size: 48px; margin-bottom: 15px;">
+                    <i class="fas fa-video" style="color: rgba(255,255,255,0.7);"></i>
+                </div>
+                <p style="font-size: 16px; margin-bottom: 10px;">Deki au uvute video hapa</p>
+                <p style="font-size: 12px; opacity: 0.8;">MP4, WebM au formats nyingine - Max 100MB</p>
+            </div>
+            
+            <input type="file" id="fileInput" accept="video/*" style="display: none;" onchange="handleFileSelect(event)">
+            
+            <div id="uploadProgress" style="display: none; margin-top: 20px;">
+                <p id="progressText" style="text-align: center; margin-bottom: 10px;">Inapakia... 0%</p>
+                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden;">
+                    <div id="progressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #fff, #667eea); transition: width 0.3s;"></div>
+                </div>
+            </div>
+            
+            <div id="uploadSuccess" style="display: none; margin-top: 20px; text-align: center;">
+                <p style="margin-bottom: 15px;">✅ Video imepakia!</p>
+                <button class="action-btn primary" onclick="closeUploadModal()">Karibu kwa Loop</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let videos = [];
+        let currentVideoIndex = 0;
+        
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            loadVideos();
+            setupDragDrop();
+        });
+        
+        function setupDragDrop() {
+            const dropZone = document.getElementById('dropZone');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.add('dragover');
+                });
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.remove('dragover');
+                });
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                document.getElementById('fileInput').files = files;
+                if (files.length > 0) {
+                    handleFileSelect({ target: { files: files } });
+                }
+            });
+        }
+        
+        async function loadVideos() {
+            try {
+                const response = await fetch('/api/videos');
+                const data = await response.json();
+                videos = data.videos || [];
+                
+                if (videos.length > 0) {
+                    currentVideoIndex = 0;
+                    playVideo(0);
+                    renderGallery();
+                } else {
+                    document.getElementById('videoGrid').innerHTML = 
+                        '<div class="no-videos" style="grid-column: 1/-1;">Hakuna videos bado. Pakia moja! 🎬</div>';
+                }
+            } catch (error) {
+                console.error('Error loading videos:', error);
+            }
+        }
+        
+        function playVideo(index) {
+            if (videos.length === 0) return;
+            
+            currentVideoIndex = (index + videos.length) % videos.length;
+            const video = document.getElementById('videoPlayer');
+            video.src = videos[currentVideoIndex].url;
+            video.play();
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i> Simama';
+        }
+        
+        function nextVideo() {
+            playVideo(currentVideoIndex + 1);
+        }
+        
+        function previousVideo() {
+            playVideo(currentVideoIndex - 1);
+        }
+        
+        function togglePlay() {
+            const video = document.getElementById('videoPlayer');
+            if (video.paused) {
+                video.play();
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i> Simama';
+            } else {
+                video.pause();
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> Cheza';
+            }
+        }
+        
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            uploadVideo(file);
+        }
+        
+        async function uploadVideo(file) {
+            const formData = new FormData();
+            formData.append('video', file);
+            
+            document.getElementById('uploadProgress').style.display = 'block';
+            document.getElementById('uploadSuccess').style.display = 'none';
+            
+            try {
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        document.getElementById('progressBar').style.width = percentComplete + '%';
+                        document.getElementById('progressText').textContent = 
+                            `Inapakia... ${Math.round(percentComplete)}%`;
+                    }
+                });
+                
+                xhr.addEventListener('load', () => {
+                    if (xhr.status === 200) {
+                        document.getElementById('uploadProgress').style.display = 'none';
+                        document.getElementById('uploadSuccess').style.display = 'block';
+                        loadVideos();
+                    } else {
+                        alert('Kosa: Haikuweza kupakia video');
+                    }
+                });
+                
+                xhr.addEventListener('error', () => {
+                    alert('Kosa la mtandao');
+                });
+                
+                xhr.open('POST', '/api/upload');
+                xhr.send(formData);
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Kosa: ' + error.message);
+            }
+        }
+        
+        function renderGallery() {
+            const grid = document.getElementById('videoGrid');
+            if (videos.length === 0) {
+                grid.innerHTML = '<div class="no-videos" style="grid-column: 1/-1;">Hakuna videos</div>';
+                return;
+            }
+            
+            grid.innerHTML = videos.map((video, index) => `
+                <div class="video-thumbnail" onclick="playVideoFromGallery(${index})">
+                    <video>
+                        <source src="${video.url}" type="video/mp4">
+                    </video>
+                    <button class="delete-btn" onclick="deleteVideo('${video.filename}', event)">
+                        <i class="fas fa-trash"></i> Futa
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        function playVideoFromGallery(index) {
+            showPlayer();
+            playVideo(index);
+        }
+        
+        async function deleteVideo(filename, event) {
+            event.stopPropagation();
+            
+            if (!confirm('Futa video hii?')) return;
+            
+            try {
+                const response = await fetch(`/api/videos/${filename}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    loadVideos();
+                } else {
+                    alert('Kosa: Haikuweza kufuta video');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Kosa: ' + error.message);
+            }
+        }
+        
+        function showUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+        }
+        
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            document.getElementById('fileInput').value = '';
+            document.getElementById('uploadProgress').style.display = 'none';
+            document.getElementById('uploadSuccess').style.display = 'none';
+        }
+        
+        function showPlayer() {
+            document.getElementById('playerView').style.display = 'block';
+            document.getElementById('galleryView').style.display = 'none';
+        }
+        
+        function showGallery() {
+            document.getElementById('playerView').style.display = 'none';
+            document.getElementById('galleryView').style.display = 'block';
+            loadVideos();
+        }
+    </script>
+</body>
+</html>
