@@ -1,84 +1,97 @@
-# 🌐 SWAHILI LOOP: Mradi wa Video Fupi (TikTok Clone)
+# 🎬 Swahili Loop - Video App
 
-## Utangulizi
-Karibu kwenye **Swahili Loop**, jukwaa bunifu la video fupi lililoundwa kwa ajili ya jamii.
-Mradi huu unajengwa kwa kutumia React na React Native, ukilenga kutoa uzoefu wa kirafiki na wenye usalama.
+Karibu kwenye Swahili Loop! Hii ni app ya video kwa Swahili - upload, cheza, na tafuta videos zako!
 
-### ✨ Brand Identity
-- **Imeanzishwa na:** Salehe Shabani Omary (SSO)
-- **Muonekano:** [SSO] Innovation, Accessibility, Community.
+## Features ✨
 
-## ⚙️ Teknolojia Zinazotumika
+- 📱 **TikTok Style** - Full screen video player na looping
+- 🎥 **Upload Videos** - Pakia videos zako MP4, WebM
+- 🎨 **Beautiful UI** - Purple gradient, modern design
+- 📊 **Gallery** - Tazama videos zako kwa grid
+- ⚡ **Fast** - Built with Express.js
+- 🌍 **Swahili** - All text in Swahili!
 
-| Eneo | Teknolojia | Maelezo |
-| :--- | :--- | :--- |
-| **Front-end** | React / Next.js (Kwa Web View) | Framework ya msingi ya UI/UX |
-| **Mobile App** | React Native (Expo) | Kuunda App ya Android na iOS |
-| **Styling** | CSS Modules / Tailwind CSS | Kwa ajili ya muonekano wa kisasa na 'Anti-hack theme' |
-| **Deployment** | Vercel | Kwa ajili ya kuchezesha tovuti (Website Hosting) |
-| **Versioning** | GitHub | Kwa ajili ya usimamizi wa source code |
+## Setup 🚀
 
-## 📦 Muundo wa Mradi (Component Structure)
+### Requirements
+- Node.js 14+
+- npm or yarn
 
-Mradi huu unajengwa kwa vipengele vifuatavyo vya msingi:
+### Installation
 
-1.  **`Auth.tsx`**: Usimamizi wa Ku_Login na Kujisajili.
-    * *Sifa Maalum:* Muonekano wa Anti-hack na System Scanning Animation.
-2.  **`VideoFeed.tsx`**: Skrini Kuu ya Video (For You Page).
-    * *Sifa Maalum:* FlatList yenye Snap-to-Interval kwa scrolling laini.
-3.  **`SettingsScreen.tsx`**: Skrini ya Mipangilio na Faragha (Mfumo wa TikTok).
+```bash
+# Clone repository
+git clone https://github.com/creatorgame43/swahili-loop.git
+cd swahili-loop
 
-## 🚀 Ku-Deploy kwa Kutumia Vercel (Mwongozo)
+# Install dependencies
+npm install
 
-Mradi huu umepangwa ku-deploywa kwa urahisi kwenye Vercel:
+# Start server
+npm start
+```
 
-### Hatua za Kuanzisha (Setup)
+Server runs on `http://localhost:3000`
 
-1.  **Clone Repository:**
-    ```bash
-    git clone [https://github.com/yahoo](https://github.com/yahoo)
-    cd swahili-loop
-    ```
+## Usage 🎮
 
-2.  **Install Dependencies:**
-    ```bash
-    npm install
-    # AU
-    yarn install
-    ```
+1. **Open** - Go to http://localhost:3000
+2. **Upload** - Click "Upload" button na deki/uvute video
+3. **Play** - Click "Cheza" kucheza video
+4. **Navigate** - Use Nyuma/Mbele buttons
+5. **Gallery** - Click "Orodha" kuona videos zako
 
-3.  **Run Locally (Dev Server):**
-    ```bash
-    npm run dev
-    # AU
-    yarn dev
-    ```
+## Files 📁
 
-### Kuunganisha na Vercel
+```
+swahili-loop/
+├── server.js           # Backend API (Express)
+├── package.json        # Dependencies
+├── public/
+│   ├── index.html      # Frontend (TikTok style)
+│   └── uploads/        # Videos storage
+└── README.md
+```
 
-1.  **Fungua Akaunti ya Vercel:** Hakikisha una akaunti iliyounganishwa na GitHub.
-2.  **Import Project:** Ingia Vercel, chagua **"New Project"**, kisha chagua repository ya **Swahili Loop** kutoka kwenye GitHub yako.
-3.  **Configure:** Vercel itatambua kuwa ni mradi wa React/Next.js (ikiwa utatumia Next.js) na itapendekeza mipangilio chaguomsingi.
-4.  **Deploy:** Bonyeza **"Deploy"**. Website yako itaanza kucheza mtandaoni chini ya domain ya Vercel!
+## API Endpoints 🔌
+
+- `POST /api/upload` - Upload video
+- `GET /api/videos` - Get all videos
+- `DELETE /api/videos/:filename` - Delete video
+
+## Deployment 🌐
+
+### Deploy to Vercel
+
+1. Push to GitHub
+2. Connect to Vercel
+3. Set environment: `NODE_ENV=production`
+4. Deploy!
+
+Note: Free tier has file size limits. For production, use cloud storage (AWS S3, Cloudinary).
+
+## Customization 🎨
+
+### Change Logo
+Edit `index.html` - find "SWAHILILOOP" text
+
+### Change Colors
+Edit CSS gradients in `<style>` section - replace `#667eea` and `#764ba2`
+
+### Add Features
+- User accounts
+- Like/comment system
+- Share to social media
+- Advanced video editing
+
+## License 📄
+
+MIT - Feel free to use and modify!
+
+## Support 💬
+
+Questions? Issues? Let's debug together!
 
 ---
 
-## 🔒 Vifungu vya Usalama
-
-**Auth.tsx** imewekwa katika muonekano wa 'Anti-Hack' kuonyesha umakini wetu katika usalama wa data. Hatua za usalama ni pamoja na:
-
-* **Salting na Hashing:** Nenosiri litapaswa kuhifadhiwa kwa kutumia algoriti kali (kama vile bcrypt).
-* **Tokenization:** Kutumia JWTs (JSON Web Tokens) kwa ajili ya vikao salama.
-
-## 🤝 Mchango (Contributing)
-
-CEO Salehe Shabani Omary (SSO) anakaribisha michango (contributions) kutoka kwa developers wengine.
-
-1.  **Fork** repository hii.
-2.  Unda **Branch** mpya: `git checkout -b feature/jina-la-feature`
-3.  Fanya **Changes** zako.
-4.  **Commit** mabadiliko yako: `git commit -m 'feat: nimeongeza feature mpya'`
-5.  **Push** kwenye Branch: `git push origin feature/jina-la-feature`
-6.  Fungua **Pull Request** kwenye GitHub.
-
----
+Made with ❤️ for Swahili speakers
