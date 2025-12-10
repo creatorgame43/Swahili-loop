@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Swahili Loop</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo h1 {
+      color: #667eea;
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+
+    .logo p {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #eee;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      font-family: inherit;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+
+    input::placeholder {
+      color: #bbb;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .alert.show {
+      display: block;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      color: #667eea;
+      margin-top: 15px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .toggle-screen {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .toggle-screen a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .toggle-screen a:hover {
+      text-decoration: underline;
+    }
+
+    .otp-input-group {
+      display: flex;
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .otp-input {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #eee;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 5px;
+    }
+
+    .otp-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .timer {
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+      margin: 15px 0;
+    }
+
+    .timer.warning {
+      color: #e74c3c;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .error-text {
+      color: #e74c3c;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px;
+      }
+
+      .logo h1 {
+        font-size: 24px;
+      }
+
+      input, .btn {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Register Screen -->
+    <div id="registerScreen" class="screen active">
+      <div class="logo">
+        <h1>🎬 Swahili Loop</h1>
+        <p>Share Your Videos</p>
+      </div>
+
+      <div id="registerAlert" class="alert"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" placeholder="John Doe" required>
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="john_doe" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="john@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Account</button>
+
+        <div class="loading" id="registerLoading">
+          <div class="spinner"></div>
+          <p>Creating your account...</p>
+        </div>
+      </form>
+
+      <div class="toggle-screen">
+        Already have account? <a onclick="toggleScreen('login')">Login</a>
+      </div>
+    </div>
+
+    <!-- OTP Verification Screen -->
+    <div id="otpScreen" class="screen">
+      <div class="logo">
+        <h1>🔐 Verify OTP</h1>
+        <p id="otpEmail" style="color: #666;"></p>
+      </div>
+
+      <div id="otpAlert" class="alert"></div>
+
+      <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+        Enter the 6-digit code sent to your email
+      </p>
+
+      <form id="otpForm">
+        <input type="text" id="otpInput" placeholder="000000" maxlength="6" required 
+               style="text-align: center; font-size: 24px; letter-spacing: 10px; font-weight: bold;">
+
+        <div class="timer" id="otpTimer">OTP expires in: <span id="timerValue">10:00</span></div>
+
+        <button type="submit" class="btn btn-primary">Verify OTP</button>
+
+        <div class="loading" id="otpLoading">
+          <div class="spinner"></div>
+          <p>Verifying...</p>
+        </div>
+      </form>
+
+      <div class="toggle-screen">
+        <a onclick="resendOTP()" id="resendBtn">Resend OTP</a> • 
+        <a onclick="toggleScreen('register')">Back</a>
+      </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen">
+      <div class="logo">
+        <h1>🎬 Swahili Loop</h1>
+        <p>Welcome Back</p>
+      </div>
+
+      <div id="loginAlert" class="alert"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="john@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Login</button>
+
+        <div class="loading" id="loginLoading">
+          <div class="spinner"></div>
+          <p>Logging in...</p>
+        </div>
+      </form>
+
+      <div class="toggle-screen">
+        Don't have account? <a onclick="toggleScreen('register')">Register</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let registerEmail = '';
+    let otpTimer = null;
+    let otpTimeRemaining = 600; // 10 minutes
+
+    function toggleScreen(screen) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screen + 'Screen').classList.add('active');
+      clearAlert();
+      if (otpTimer) clearInterval(otpTimer);
+    }
+
+    function showAlert(message, type = 'error', screenId = 'register') {
+      const alertEl = document.getElementById(screenId + 'Alert');
+      alertEl.className = `alert alert-${type} show`;
+      alertEl.textContent = message;
+    }
+
+    function clearAlert() {
+      document.querySelectorAll('.alert').forEach(a => a.classList.remove('show'));
+    }
+
+    function showLoading(show, screenId = 'register') {
+      document.getElementById(screenId + 'Loading').style.display = show ? 'block' : 'none';
+    }
+
+    // Register Form
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fullName = document.getElementById('fullName').value;
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (password.length < 6) {
+        showAlert('Password must be at least 6 characters', 'error', 'register');
+        return;
+      }
+
+      showLoading(true, 'register');
+
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fullName, username, email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          registerEmail = email;
+          localStorage.setItem('registerEmail', email);
+          otpTimeRemaining = 600;
+          startOTPTimer();
+          toggleScreen('otp');
+          document.getElementById('otpEmail').textContent = `OTP sent to ${email}`;
+          showAlert('✅ Registration successful! Check your email for OTP', 'success', 'otp');
+        } else {
+          showAlert(data.error || 'Registration failed', 'error', 'register');
+        }
+      } catch (error) {
+        showAlert('Network error: ' + error.message, 'error', 'register');
+      } finally {
+        showLoading(false, 'register');
+      }
+    });
+
+    // OTP Form
+    document.getElementById('otpForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const otp = document.getElementById('otpInput').value;
+      const email = localStorage.getItem('registerEmail');
+
+      if (otp.length !== 6) {
+        showAlert('Please enter a 6-digit OTP', 'error', 'otp');
+        return;
+      }
+
+      showLoading(true, 'otp');
+
+      try {
+        const response = await fetch('/api/auth/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          showAlert('✅ ' + data.message + '! Redirecting...', 'success', 'otp');
+          setTimeout(() => {
+            window.location.href = '/home';
+          }, 2000);
+        } else {
+          showAlert(data.error || 'Verification failed', 'error', 'otp');
+        }
+      } catch (error) {
+        showAlert('Network error: ' + error.message, 'error', 'otp');
+      } finally {
+        showLoading(false, 'otp');
+      }
+    });
+
+    // Login Form
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      showLoading(true, 'login');
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          showAlert('✅ ' + data.message + '! Redirecting...', 'success', 'login');
+          setTimeout(() => {
+            window.location.href = '/home';
+          }, 2000);
+        } else {
+          showAlert(data.error || 'Login failed', 'error', 'login');
+        }
+      } catch (error) {
+        showAlert('Network error: ' + error.message, 'error', 'login');
+      } finally {
+        showLoading(false, 'login');
+      }
+    });
+
+    // Resend OTP
+    async function resendOTP() {
+      const email = localStorage.getItem('registerEmail');
+      const btn = document.getElementById('resendBtn');
+
+      btn.style.pointerEvents = 'none';
+      btn.style.opacity = '0.5';
+
+      try {
+        const response = await fetch('/api/auth/resend-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          otpTimeRemaining = 600;
+          startOTPTimer();
+          showAlert('✅ New OTP sent to your email!', 'success', 'otp');
+        } else {
+          showAlert(data.error || 'Failed to resend OTP', 'error', 'otp');
+        }
+      } catch (error) {
+        showAlert('Network error: ' + error.message, 'error', 'otp');
+      } finally {
+        setTimeout(() => {
+          btn.style.pointerEvents = 'auto';
+          btn.style.opacity = '1';
+        }, 3000);
+      }
+    }
+
+    // OTP Timer
+    function startOTPTimer() {
+      if (otpTimer) clearInterval(otpTimer);
+
+      otpTimer = setInterval(() => {
+        otpTimeRemaining--;
+        const minutes = Math.floor(otpTimeRemaining / 60);
+        const seconds = otpTimeRemaining % 60;
+        document.getElementById('timerValue').textContent = 
+          `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+        const timerEl = document.getElementById('otpTimer');
+        if (otpTimeRemaining < 60) {
+          timerEl.classList.add('warning');
+        }
+
+        if (otpTimeRemaining <= 0) {
+          clearInterval(otpTimer);
+          showAlert('OTP expired. Please request a new one.', 'error', 'otp');
+        }
+      }, 1000);
+    }
+
+    // Only input numbers in OTP
+    document.getElementById('otpInput').addEventListener('keypress', (e) => {
+      if (!/[0-9]/.test(e.key)) e.preventDefault();
+    });
+  </script>
+</body>
+</html>

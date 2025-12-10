@@ -1,11 +1,25 @@
+// Load OpenTelemetry instrumentation first
+require('./instrumentation');
+
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Import auth routes
+const authRoutes = require('./routes/auth');
+
+// Connect to MongoDB
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/swahili-loop';
+mongoose.connect(mongoURI)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('❌ MongoDB error:', err));
 
 // Middleware
 app.use(cors());
@@ -43,6 +57,11 @@ const upload = multer({
 });
 
 // Routes
+
+// Authentication routes
+app.use('/api/auth', authRoutes);
+
+// Video upload route
 app.post('/api/upload', upload.single('video'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
